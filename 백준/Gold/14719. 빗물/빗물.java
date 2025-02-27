@@ -7,32 +7,27 @@ class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         int h = Integer.parseInt(st.nextToken());
         int w = Integer.parseInt(st.nextToken());
-        boolean[][] graph = new boolean[h][w];
-
         st = new StringTokenizer(br.readLine());
+        int[] height = new int[w];
         for (int i = 0 ; i < w ; i++) {
-            int height = Integer.parseInt(st.nextToken());
-            for (int j = 0 ; j < height ; j++) {
-                graph[j][i] = true;
+            height[i] = Integer.parseInt(st.nextToken());
+        }
+        int answer = 0;
+        
+        for (int i = 1 ; i < w ; i++) {
+            int left = 0;
+            for (int j = i - 1 ; j >= 0 ; j--) {
+                left = Math.max(left, height[j]);
+            }
+            int right = 0;
+            for (int j= i + 1 ; j < w ; j++) {
+                right = Math.max(right, height[j]);
+            }
+            if (left > height[i] && right > height[i]) {
+                answer += (Math.min(left, right) - height[i]);
             }
         }
-
-        int count = 0;
-
-        for (int i = 0 ; i < h ; i++) {
-            int prev = -1;
-            for (int j = 0 ; j < w ; j++) {
-                if (graph[i][j] == true) {
-                    if (prev == -1) {
-                        prev = j;
-                    } else {
-                        count += (j - prev - 1);
-                        prev = j;
-                    }
-                }
-            }
-        }
-
-        System.out.println(count);
+        
+        System.out.print(answer);
     }
 }
