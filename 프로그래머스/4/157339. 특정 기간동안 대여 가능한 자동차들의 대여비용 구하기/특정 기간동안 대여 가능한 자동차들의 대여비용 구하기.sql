@@ -1,0 +1,15 @@
+-- 코드를 입력하세요
+WITH SUB AS (
+    SELECT car.CAR_ID, car.CAR_TYPE, ROUND(car.DAILY_FEE * (1 - plan.DISCOUNT_RATE / 100)) * 30 as FEE
+    FROM CAR_RENTAL_COMPANY_CAR car
+    INNER JOIN CAR_RENTAL_COMPANY_DISCOUNT_PLAN plan on car.CAR_TYPE = plan.CAR_TYPE and plan.DURATION_TYPE = "30일 이상"
+    WHERE car.CAR_ID NOT IN (
+        SELECT history.CAR_ID
+        FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY history
+        WHERE history.START_DATE <= '2022-11-30' AND history.END_DATE >= '2022-11-01'
+    )
+    AND car.CAR_TYPE in ("세단", "SUV")
+)
+SELECT *
+FROM SUB
+WHERE SUB.FEE BETWEEN 500000 and 2000000;
