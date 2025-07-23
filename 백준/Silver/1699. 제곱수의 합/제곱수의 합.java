@@ -5,24 +5,20 @@ class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
-        int m = (int) Math.sqrt(n);
-        int[][] dis = new int[m + 1][n + 1];
-
-        for (int i = 0 ; i <= n ; i++) {
-            dis[1][i] = i;
+        int[] dp = new int[n + 1];
+        for (int i = 1 ; i <= n ; i++) {
+            dp[i] = i;
         }
+        int max = (int)Math.sqrt(n);
 
-        for (int i = 2 ; i <= m ; i++) {
+        for (int i = 1 ; i <= max ; i++) {
+            int sqrt = i * i;
             for (int j = 1 ; j <= n ; j++) {
-                int min = dis[i - 1][j];
-                if (j - (i * i) >= 0) {
-                    min = Math.min(min, dis[i][j - (i * i)] + 1);
-                }
-                dis[i][j] = min;
+                if (j < sqrt) continue;
+                dp[j] = Math.min(dp[j], dp[j - sqrt] + 1);
             }
         }
 
-        System.out.println(dis[m][n]);
+        System.out.println(dp[n]);
     }
-
 }
