@@ -1,41 +1,34 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-class Node {
-    int w;
-    int v;
-
-    public Node(int w, int v) {
-        this.w = w;
-        this.v = v;
-    }
-}
 class Main {
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         int n = Integer.parseInt(st.nextToken());
         int k = Integer.parseInt(st.nextToken());
 
-        Node[] arr = new Node[n + 1];
+        int[][] arr = new int[n + 1][2];
+
         for (int i = 1 ; i <= n ; i++) {
             st = new StringTokenizer(br.readLine());
-            int w = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
-            arr[i] = new Node(w, v);
+            arr[i][0] = Integer.parseInt(st.nextToken());
+            arr[i][1] = Integer.parseInt(st.nextToken());
         }
 
-        int[][] dp = new int[k + 1][n + 1];
+        int[][] dp = new int[n + 1][k + 1];
 
-        for (int bag = 1 ; bag <= k ; bag++) {
-            for (int i = 1 ; i <= n ; i++) {
-                if (arr[i].w > bag) {
-                    dp[bag][i] = dp[bag][i - 1];
-                } else if (arr[i].w <= k) {
-                    dp[bag][i] = Math.max(dp[bag - arr[i].w][i - 1] + arr[i].v, dp[bag][i - 1]);
+        for (int i = 1 ; i <= n ; i++) {
+            for (int j = 1 ; j <= k ; j++) {
+                if (j - arr[i][0] < 0) {
+                    dp[i][j] = dp[i - 1][j];
+                } else {
+                    dp[i][j] =  Math.max(dp[i - 1][j - arr[i][0]] + arr[i][1], dp[i - 1][j]);
                 }
             }
         }
-        System.out.print(dp[k][n]);
+
+        System.out.println(dp[n][k]);
     }
 }
