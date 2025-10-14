@@ -1,99 +1,73 @@
 import java.util.*;
 import java.io.*;
 
-class Main {
+public class Main {
     static int n;
     static int k;
     static int l;
-    static int[][] graph;
-    static List<int[]> snake = new ArrayList<>();
-    static Map<Integer, String> timeMove = new HashMap<>();
-    static int[] dx = {-1, 0, 1, 0};
-    static int[] dy = {0, 1, 0, -1};
+    static int[][] board;
+    static Queue<int[]> body = new LinkedList<>();
+    static Map<Integer, Character> move = new HashMap<>();
+
+    static int[][] d = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    static int nowD = 1;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         n = Integer.parseInt(br.readLine());
-        graph = new int[n + 1][n + 1];
         k = Integer.parseInt(br.readLine());
+        board = new int[n + 1][n + 1];
+
         for (int i = 0 ; i < k ; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-            graph[x][y] = 1;
+            board[Integer.parseInt(st.nextToken())][Integer.parseInt(st.nextToken())] = 2;
         }
 
         l = Integer.parseInt(br.readLine());
-
         for (int i = 0 ; i < l ; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            int time = Integer.parseInt(st.nextToken());
-            String move = st.nextToken();
-            timeMove.put(time, move);
+            move.put(Integer.parseInt(st.nextToken()), st.nextToken().charAt(0));
         }
 
-        int cx = 1;
-        int cy = 1;
-        int move = 1;
-        int time = 0;
-        snake.add(new int[]{cx, cy});
-        while (true) {
-            time++;
-            cx += dx[move];
-            cy += dy[move];
+        board[1][1] = 1;
+        body.offer(new int[]{1, 1});
 
-            if (isFinish(cx, cy)) {
+        int count = 0;
+        int dx = 1;
+        int dy = 1;
+
+        while (true) {
+            count++;
+            int nx = dx + d[nowD][0];
+            int ny = dy + d[nowD][1];
+
+            if (nx < 1 || nx > n || ny < 1 || ny > n || board[nx][ny] == 1) {
                 break;
             }
 
-            if (graph[cx][cy] == 1) {
-                graph[cx][cy] = 0;
-                snake.add(new int[]{cx, cy});
-            } else {
-                snake.add(new int[]{cx, cy});
-                snake.remove(0);
+
+
+            if (board[nx][ny] != 2) {
+                int[] tail = body.poll();
+                board[tail[0]][tail[1]] = 0;
             }
 
-            if (timeMove.containsKey(time)) {
-                String direction = timeMove.get(time);
-                if (direction.equals("L")) {
-                    move = leftMove(move);
-                } else {
-                    move = rightMove(move);
+            board[nx][ny] = 1;
+            body.offer(new int[]{nx, ny});
+            dx = nx;
+            dy = ny;
+
+            // 방향 전환 여부 체크
+            if (move.containsKey(count)) {
+                if (move.get(count) == 'L') {
+                    nowD = (nowD + 4 - 1) % 4;
+                } else if (move.get(count) == 'D') {
+                    nowD = (nowD + 4 + 1) % 4;
                 }
             }
+
         }
 
-        System.out.print(time);
-    }
-
-    public static int leftMove(int move) {
-        if (move == 0) {
-            return 3;
-        } else {
-            return move - 1;
-        }
-    }
-
-    public static int rightMove(int move) {
-        if (move == 3) {
-            return 0;
-        } else {
-            return move + 1;
-        }
-    }
-
-    public static boolean isFinish(int nx, int ny) {
-        if (nx < 1 || nx > n || ny < 1 || ny > n) {
-            return true;
-        }
-
-        for (int[] arr : snake) {
-            if (arr[0] == nx && arr[1] == ny) {
-                return true;
-            }
-        }
-
-        return false;
+        System.out.print(count);
     }
 }
