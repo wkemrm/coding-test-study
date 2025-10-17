@@ -4,23 +4,35 @@ import java.io.*;
 class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(br.readLine());
-        int[][] arr = new int[n + 1][10];
-        for (int i = 0 ; i < 10 ; i++) {
-            arr[1][i] = 1;
+        int N = Integer.parseInt(br.readLine());
+        
+        // dp[i][j] = 길이가 i, 마지막 숫자가 j인 오르막 수
+        int[][] dp = new int[N + 1][10];
+        
+        // 초기값: 길이 1
+        for (int j = 0; j <= 9; j++) {
+            dp[1][j] = 1;
         }
-
-        for (int now = 2 ; now <= n ; now++) {
-            arr[now][0] = 1;
-            for (int i = 1 ; i < 10 ; i++) {
-                arr[now][i] = (arr[now - 1][i] + arr[now][i - 1]) % 10007;
+        
+        // DP 계산
+        for (int i = 2; i <= N; i++) {
+            for (int j = 0; j <= 9; j++) {
+                if (j == 0) {
+                    // 마지막이 0이면 앞도 0만 가능
+                    dp[i][j] = dp[i - 1][0];
+                } else {
+                    // 점화식 적용
+                    dp[i][j] = (dp[i][j - 1] + dp[i - 1][j]) % 10007;
+                }
             }
         }
-
-        int result = 0;
-        for (int i = 0 ; i < 10 ; i++) {
-            result = (result + arr[n][i]) % 10007;
+        
+        // 답: 길이 N인 모든 오르막 수의 합
+        int answer = 0;
+        for (int j = 0; j <= 9; j++) {
+            answer = (answer + dp[N][j]) % 10007;
         }
-        System.out.print(result);
+        
+        System.out.println(answer);
     }
 }
